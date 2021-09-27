@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
+    <ProjectReference Include="..\LinkMinifier.Data\LinkMinfier.Data.csproj" />
   </ItemGroup>
 
 </Project>
