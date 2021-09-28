@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkShortener.Data", "LinkShortener.Data\LinkShortener.Data.csproj", "{0B5E717C-BF3B-4650-9F0B-1185A7B13EAA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.WebUI", "LinkShortener.WebUI\LinkShortener.WebUI.csproj", "{0D135E94-445C-4B3A-AC96-773CE3BB2BC6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.WebAPI", "LinkShortener.WebAPI\LinkShortener.WebAPI.csproj", "{953000C1-451A-46A3-B844-5AC60755B904}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LinkShortener.Data", "LinkShortener.Data\LinkShortener.Data.csproj", "{0B5E717C-BF3B-4650-9F0B-1185A7B13EAA}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.Services", "LinkShortener.Services\LinkShortener.Services.csproj", "{61494A8F-7972-4788-A4F0-3ECBEE841147}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LinkShortener.WebUI", "LinkShortener.WebUI\LinkShortener.WebUI.csproj", "{0D135E94-445C-4B3A-AC96-773CE3BB2BC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
