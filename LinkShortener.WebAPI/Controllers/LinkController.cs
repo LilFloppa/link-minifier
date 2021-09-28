@@ -1,8 +1,8 @@
-﻿using LinkMinifier.Services.Interfaces;
+﻿using LinkShortener.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
-namespace LinkMinifier.WebAPI.Controllers
+namespace LinkShortener.WebAPI.Controllers
 {
     [ApiController]
     [Route("")]
@@ -12,20 +12,18 @@ namespace LinkMinifier.WebAPI.Controllers
         public LinkController(ILinkService linkService) => this.linkService = linkService;
 
         [HttpGet]
-        [Route("{minified}")]
-        public async Task<IActionResult> Get(string minified)
+        [Route("{shortened}")]
+        public async Task<IActionResult> Get(string shortened)
         {
-            string host = Request.Host.Value;
-            string minif = await linkService.MinifyLink("Hello");
+            await linkService.GetOriginalLink(shortened);
 
-            return Redirect("https://" + host + "/" + minif);
             return NotFound();
         }
 
         [HttpPost]
         public async Task Post(string original)
         {
-
+            await linkService.ShortenLink(original);
         }
     }
 }

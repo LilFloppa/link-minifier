@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LinkMinifier.Data\LinkMinfier.Data.csproj" />
+    <ProjectReference Include="..\LinkShortener.Data\LinkShortener.Data.csproj" />
   </ItemGroup>
 
 </Project>

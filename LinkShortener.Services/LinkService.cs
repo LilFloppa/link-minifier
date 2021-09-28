@@ -1,10 +1,10 @@
 ﻿using Data;
 using Data.Models;
 using HashidsNet;
-using LinkMinifier.Services.Interfaces;
+using LinkShortener.Services.Interfaces;
 using System.Threading.Tasks;
 
-namespace LinkMinifier.Services
+namespace LinkShortener.Services
 {
     public class LinkService : ILinkService
     {
@@ -12,25 +12,25 @@ namespace LinkMinifier.Services
         private readonly ApplicationContext context;
         public LinkService(ApplicationContext context) => this.context = context;
 
-        public async Task<string> GetOriginalLink(string minifiedLink)
+        public async Task<string> GetOriginalLink(string shortened)
         {
 
             await Task.Delay(2000);
             return "https://www.google.com/";
         }
 
-        public async Task<string> MinifyLink(string link)
+        public async Task<string> ShortenLink(string original)
         {
             var hashids = new Hashids(minHashLength: 7);
-            var entry = await context.Links.AddAsync(new Link { OriginalLink = link });
+            var entry = await context.Links.AddAsync(new Link { OriginalLink = original });
             await context.SaveChangesAsync();
             Link added = entry.Entity;
 
-            added.MinifiedLink = hashids.Encode(added.Id);
+            added.ShortenedLink = hashids.Encode(added.Id);
             context.Links.Update(added);
             await context.SaveChangesAsync();
 
-            return added.MinifiedLink;
+            return added.ShortenedLink;
         }
     }
 }

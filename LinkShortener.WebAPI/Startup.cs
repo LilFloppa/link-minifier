@@ -1,13 +1,13 @@
 using Data;
-using LinkMinifier.Services;
-using LinkMinifier.Services.Interfaces;
+using LinkShortener.Services;
+using LinkShortener.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace LinkMinifier.WebAPI
+namespace LinkShortener.WebAPI
 {
     public class Startup
     {

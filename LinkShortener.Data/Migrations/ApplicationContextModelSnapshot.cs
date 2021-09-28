@@ -21,10 +21,10 @@ namespace LinkMinfier.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("MinifiedLink")
+                    b.Property<string>("OriginalLink")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("OriginalLink")
+                    b.Property<string>("ShortenedLink")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

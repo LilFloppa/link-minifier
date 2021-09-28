@@ -13,7 +13,7 @@ namespace LinkMinfier.Data.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     OriginalLink = table.Column<string>(type: "TEXT", nullable: true),
-                    MinifiedLink = table.Column<string>(type: "TEXT", nullable: true)
+                    ShortenedLink = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

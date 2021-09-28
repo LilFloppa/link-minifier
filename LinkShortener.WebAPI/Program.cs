@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LinkMinifier.WebAPI
+namespace LinkShortener.WebAPI
 {
     public class Program
     {
