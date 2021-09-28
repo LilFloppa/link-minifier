@@ -15,12 +15,17 @@ namespace LinkMinifier.WebAPI.Controllers
         [Route("{minified}")]
         public async Task<IActionResult> Get(string minified)
         {
-            string original = await linkService.GetOriginalLink("Hello");
+            string host = Request.Host.Value;
+            string minif = await linkService.MinifyLink("Hello");
 
-            if (original != string.Empty)
-                return Redirect(original);
-
+            return Redirect("https://" + host + "/" + minif);
             return NotFound();
+        }
+
+        [HttpPost]
+        public async Task Post(string original)
+        {
+
         }
     }
 }
