@@ -17,7 +17,7 @@ namespace LinkShortener.Services
         public async Task<string> GetOriginalLink(string shortened)
         {
             Link original = await (
-                from link in context.Links.Include(l => l.ShortenedLink)
+                from link in context.Links
                 where link.ShortenedLink == shortened
                 select link).FirstOrDefaultAsync();
 

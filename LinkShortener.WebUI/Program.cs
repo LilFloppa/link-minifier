@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -13,7 +12,8 @@ namespace LinkShortener.WebUI
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(sp => new HttpClient());
+            HttpClient httpClient = new HttpClient();
+            builder.Services.AddScoped(sp => httpClient);
 
             await builder.Build().RunAsync();
         }

@@ -74,15 +74,20 @@
     private async Task OnValidSubmit()
     {
         requestError = "";
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://localhost:5001");
-        request.SetBrowserRequestMode(BrowserRequestMode.NoCors);
-        request.Content = new StringContent(JsonSerializer.Serialize(link), Encoding.UTF8, "application/json");
 
-        HttpResponseMessage response;
+        HttpResponseMessage response = null;
         try
         {
-            response = await httpClient.SendAsync(request);
+            response = await httpClient.PostAsJsonAsync("https://localhost:5001", link);
+        }
+        catch (Exception ex)
+        {
+            requestError = $"Request Error ({ex.Message})";
+            return;
+        }
 
+        if (response != null)
+        {
             if (response.IsSuccessStatusCode)
             {
                 Link result = await JsonSerializer.DeserializeAsync<Link>(await response.Content.ReadAsStreamAsync());
@@ -92,10 +97,6 @@
             {
                 requestError = $"Request Error ({response.StatusCode})";
             }
-        }
-        catch (Exception ex)
-        {
-            requestError = $"Request Error ({ex.Message})";
         }
     }
 

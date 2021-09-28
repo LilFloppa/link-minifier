@@ -1,8 +1,6 @@
 ﻿using LinkShortener.Data.Models;
 using LinkShortener.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace LinkShortener.WebAPI.Controllers
@@ -18,28 +16,21 @@ namespace LinkShortener.WebAPI.Controllers
         [Route("{shortened}")]
         public async Task<IActionResult> Get(string shortened)
         {
-            await linkService.GetOriginalLink(shortened);
+            string original = await linkService.GetOriginalLink(shortened);
+
+            if (!string.IsNullOrEmpty(original))
+                return Redirect(original);
 
             return NotFound();
         }
 
         [HttpPost]
-        public async Task<string> Post()
+        public async Task<IActionResult> Post(Link link)
         {
-            Link link = new Link();
-            try
-            {
-                link = await JsonSerializer.DeserializeAsync<Link>(Request.Body);
-            }
-            catch
-            {
-                return "";
-            }
-            
             string hash = await linkService.ShortenLink(link);
 
             link.ShortenedLink = "https://" + Request.Host + "/" + hash;
-            return JsonSerializer.Serialize(link);
+            return Ok(link);
         }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace LinkShortener.WebAPI
 {
@@ -27,10 +28,13 @@ namespace LinkShortener.WebAPI
 
             services.AddCors(options =>
             {
-                options.AddDefaultPolicy(builuder =>
-                builuder.WithOrigins("https://localhost:5001")
-                .AllowAnyHeader()
-                .AllowAnyMethod());
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder
+                    .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
             });
         }
 
