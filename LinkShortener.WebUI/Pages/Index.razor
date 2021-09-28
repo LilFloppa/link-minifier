@@ -12,13 +12,17 @@
 
         <div class="card">
             <div class="card-body">
-                <EditForm Model=@link OnValidSubmit=@OnValidSubmit>
+                <EditForm EditContext="editContext" OnValidSubmit=@OnValidSubmit>
                     <div class="form-group">
                         <label for="originalURL">Original URL:</label>
-                        <InputText class="form-control" id="originalURL" placeholder="Enter URL" @bind-Value="link.OriginalLink" required></InputText>
-                        <div class="invalid-feedback">
-                            @error
+                        <InputText class="form-control" id="originalURL" placeholder="Enter URL" @bind-Value="link.OriginalLink"></InputText>
+                        
+                        <div class="mt-1">
+                            <strong>
+                                <ValidationMessage For="() => link.OriginalLink" />
+                            </strong>
                         </div>
+                           
                     </div>
 
                     <div class="form-group">
@@ -34,26 +38,40 @@
     @code
 {
         private Link link = new Link();
-        private string error = "";
+        private EditContext editContext;
+        private ValidationMessageStore messageStore;
 
-        private async Task OnValidSubmit()
+        protected override void OnInitialized()
         {
-            bool isValid = await IsValidUrl(link.OriginalLink);
+            base.OnInitialized();
 
-            if (isValid)
-            {
-                string url = link.OriginalLink;
-                link.ShortenedLink = url;
-                error = "";
-            }
-            else
-            {
-                error = "Invalid URL";
-            }
+            editContext = new EditContext(link);
+            editContext.OnValidationRequested += OnValidationRequested;
+            messageStore = new ValidationMessageStore(editContext);
         }
 
-        private async Task<bool> IsValidUrl(string url)
+        private void OnValidationRequested(object sender, ValidationRequestedEventArgs args)
         {
-          
+            messageStore.Clear();
+
+            Console.WriteLine(link.OriginalLink);
+
+            if (string.IsNullOrEmpty(link.OriginalLink))
+                messageStore.Add(() => link.OriginalLink, "URL is requred");
+            else if (!IsValidUrl(link.OriginalLink))
+                messageStore.Add(() => link.OriginalLink, "Invalid URL");
+        }
+
+        private void OnValidSubmit()
+        {
+            string url = link.OriginalLink;
+            link.ShortenedLink = url;
+        }
+
+        private bool IsValidUrl(string url) => Uri.IsWellFormedUriString(url, UriKind.Absolute);
+
+        public void Dispose()
+        {
+            editContext.OnValidationRequested -= OnValidationRequested;
         }
     }
