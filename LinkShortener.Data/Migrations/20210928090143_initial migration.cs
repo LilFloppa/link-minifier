@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LinkMinfier.Data.Migrations
+namespace LinkShortener.Data.Migrations
 {
-    public partial class Initialmigration : Migration
+    public partial class initialmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

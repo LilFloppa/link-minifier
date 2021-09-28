@@ -1,5 +1,5 @@
-﻿using Data;
-using Data.Models;
+﻿using LinkShortener.Data;
+using LinkShortener.Data.Models;
 using HashidsNet;
 using LinkShortener.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -24,18 +24,15 @@ namespace LinkShortener.Services
             return original != null ? original.OriginalLink : string.Empty;
         }
 
-        public async Task<string> ShortenLink(string original)
+        public async Task<string> ShortenLink(Link link)
         {
-            Link result = await (
-                from link in context.Links.Include(l => l.OriginalLink)
-                where link.OriginalLink == original
-                select link).FirstOrDefaultAsync();
+            Link result = await context.Links.Where(l => l.OriginalLink == link.OriginalLink).FirstOrDefaultAsync();
 
             if (result != null)
                 return result.ShortenedLink;
 
             var hashids = new Hashids(minHashLength: 7);
-            var entry = await context.Links.AddAsync(new Link { OriginalLink = original });
+            var entry = await context.Links.AddAsync(new Link { OriginalLink = link.OriginalLink });
             await context.SaveChangesAsync();
 
             Link added = entry.Entity;
@@ -44,7 +41,6 @@ namespace LinkShortener.Services
             await context.SaveChangesAsync();
 
             return added.ShortenedLink;
-
         }
     }
 }

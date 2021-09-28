@@ -1,5 +1,8 @@
-﻿using LinkShortener.Services.Interfaces;
+﻿using LinkShortener.Data.Models;
+using LinkShortener.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace LinkShortener.WebAPI.Controllers
@@ -21,9 +24,22 @@ namespace LinkShortener.WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task Post(string original)
+        public async Task<string> Post()
         {
-            await linkService.ShortenLink(original);
+            Link link = new Link();
+            try
+            {
+                link = await JsonSerializer.DeserializeAsync<Link>(Request.Body);
+            }
+            catch
+            {
+                return "";
+            }
+            
+            string hash = await linkService.ShortenLink(link);
+
+            link.ShortenedLink = "https://" + Request.Host + "/" + hash;
+            return JsonSerializer.Serialize(link);
         }
     }
 }

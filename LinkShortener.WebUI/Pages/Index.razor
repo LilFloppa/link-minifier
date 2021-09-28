@@ -1,8 +1,11 @@
 ﻿@page "/"
 
 @using System.Net
+@using System.Text
+@using System.Text.Json
 
-@inject HttpClient httpClient;
+
+@inject HttpClient httpClient
 
 <div class="d-flex justify-content-center mt-5">
     <header>
@@ -10,68 +13,96 @@
     </header>
 </div>
 
-        <div class="card">
-            <div class="card-body">
-                <EditForm EditContext="editContext" OnValidSubmit=@OnValidSubmit>
-                    <div class="form-group">
-                        <label for="originalURL">Original URL:</label>
-                        <InputText class="form-control" id="originalURL" placeholder="Enter URL" @bind-Value="link.OriginalLink"></InputText>
-                        
-                        <div class="mt-1">
-                            <strong>
-                                <ValidationMessage For="() => link.OriginalLink" />
-                            </strong>
-                        </div>
-                           
-                    </div>
+<div class="card">
+    <div class="card-body">
+        <EditForm EditContext="editContext" OnValidSubmit=@OnValidSubmit>
+            <div class="form-group">
+                <label for="originalURL">Original URL:</label>
+                <InputText class="form-control" id="originalURL" placeholder="Enter URL" @bind-Value="link.OriginalLink"></InputText>
 
-                    <div class="form-group">
-                        <label for="shortenedURL">Shortened URL:</label>
-                        <InputText class="form-control" id="shortenedURL" @bind-Value="link.ShortenedLink" readonly></InputText>
-                    </div>
+                <div class="mt-1">
+                    <strong>
+                        <ValidationMessage For="() => link.OriginalLink" />
+                    </strong>
+                </div>
 
-                    <button type="submit" class="btn btn-primary">Shorten</button>
-                </EditForm>
             </div>
+
+            <div class="form-group">
+                <label for="shortenedURL">Shortened URL:</label>
+                <InputText class="form-control" id="shortenedURL" @bind-Value="link.ShortenedLink" readonly></InputText>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Shorten</button>
+        </EditForm>
+
+        <div class="mt-2 text-danger">
+            <strong>@requestError</strong>
         </div>
+    </div>
+</div>
 
-    @code
+@code
 {
-        private Link link = new Link();
-        private EditContext editContext;
-        private ValidationMessageStore messageStore;
+    private Link link = new Link();
+    private EditContext editContext;
+    private ValidationMessageStore messageStore;
 
-        protected override void OnInitialized()
+    private string requestError;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        editContext = new EditContext(link);
+        editContext.OnValidationRequested += OnValidationRequested;
+        messageStore = new ValidationMessageStore(editContext);
+    }
+
+    private void OnValidationRequested(object sender, ValidationRequestedEventArgs args)
+    {
+        messageStore.Clear();
+
+        Console.WriteLine(link.OriginalLink);
+
+        if (string.IsNullOrEmpty(link.OriginalLink))
+            messageStore.Add(() => link.OriginalLink, "URL is requred");
+        else if (!IsValidUrl(link.OriginalLink))
+            messageStore.Add(() => link.OriginalLink, "Invalid URL");
+    }
+
+    private async Task OnValidSubmit()
+    {
+        requestError = "";
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://localhost:5001");
+        request.SetBrowserRequestMode(BrowserRequestMode.NoCors);
+        request.Content = new StringContent(JsonSerializer.Serialize(link), Encoding.UTF8, "application/json");
+
+        HttpResponseMessage response;
+        try
         {
-            base.OnInitialized();
+            response = await httpClient.SendAsync(request);
 
-            editContext = new EditContext(link);
-            editContext.OnValidationRequested += OnValidationRequested;
-            messageStore = new ValidationMessageStore(editContext);
+            if (response.IsSuccessStatusCode)
+            {
+                Link result = await JsonSerializer.DeserializeAsync<Link>(await response.Content.ReadAsStreamAsync());
+                link.ShortenedLink = result.ShortenedLink;
+            }
+            else
+            {
+                requestError = $"Request Error ({response.StatusCode})";
+            }
         }
-
-        private void OnValidationRequested(object sender, ValidationRequestedEventArgs args)
+        catch (Exception ex)
         {
-            messageStore.Clear();
-
-            Console.WriteLine(link.OriginalLink);
-
-            if (string.IsNullOrEmpty(link.OriginalLink))
-                messageStore.Add(() => link.OriginalLink, "URL is requred");
-            else if (!IsValidUrl(link.OriginalLink))
-                messageStore.Add(() => link.OriginalLink, "Invalid URL");
-        }
-
-        private void OnValidSubmit()
-        {
-            string url = link.OriginalLink;
-            link.ShortenedLink = url;
-        }
-
-        private bool IsValidUrl(string url) => Uri.IsWellFormedUriString(url, UriKind.Absolute);
-
-        public void Dispose()
-        {
-            editContext.OnValidationRequested -= OnValidationRequested;
+            requestError = $"Request Error ({ex.Message})";
         }
     }
+
+    private bool IsValidUrl(string url) => Uri.IsWellFormedUriString(url, UriKind.Absolute);
+
+    public void Dispose()
+    {
+        editContext.OnValidationRequested -= OnValidationRequested;
+    }
+}

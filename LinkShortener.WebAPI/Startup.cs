@@ -1,4 +1,4 @@
-using Data;
+using LinkShortener.Data;
 using LinkShortener.Services;
 using LinkShortener.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
@@ -24,6 +24,14 @@ namespace LinkShortener.WebAPI
             services.AddControllers();
             services.AddScoped<ILinkService, LinkService>();
             services.AddDbContext<ApplicationContext>();
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builuder =>
+                builuder.WithOrigins("https://localhost:5001")
+                .AllowAnyHeader()
+                .AllowAnyMethod());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,6 +47,7 @@ namespace LinkShortener.WebAPI
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseCors();
 
             app.UseEndpoints(endpoints =>
             {

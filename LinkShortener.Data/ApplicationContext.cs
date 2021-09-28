@@ -1,7 +1,7 @@
-﻿using Data.Models;
+﻿using LinkShortener.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Data
+namespace LinkShortener.Data
 {
     // TODO: Probably have to Update-Database
     public class ApplicationContext : DbContext
@@ -10,6 +10,7 @@ namespace Data
 
         public ApplicationContext()
         {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
